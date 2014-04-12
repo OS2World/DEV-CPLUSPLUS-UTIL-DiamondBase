@@ -1,0 +1,88 @@
+DiamondBase README
+
+This file contains a short list of instructions on installing DiamondBase.
+
+Please make sure you have read the Copyright file.
+
+The first thing you need to do, is unpack the distribution. Well, you seem
+to have achieved that so we'll skip to the next bit...
+
+If you have GNU Make then you should use the 'Makefile' in this directory.
+If not, there is a quick and dirty Makefile.gen which works with standard
+make. 
+
+If you have GNU Make, edit the Makefile and modify the OS = line on the
+first page of it. If your operating system is not listed, see below. You
+may also want to change the BINDIR and LIBDIR to point to where you want to
+install DiamondBase. These changes can also be done by setting environment
+variables.
+
+If your OS is not listed and is not similar enough to the ones there so
+that compilation works, then define your own OS by adding the appropriate
+section to the Makefile. There are instructions in the Makefile for what
+all the symbols mean. Please do not modify the existing systems unless you
+find an error. Rather add a new section and send the changes to us (see
+BUGS below).
+
+If you are using Makefile.gen, you will probably want to change all the
+defines in there. They have the same meaning as the ones in Makefile. You
+don't need to inform us if you change this file.
+
+Once you have fixed up the Makefile, all you need to do is enter 'make' (or
+'make -f Makefile.gen' if you're not using GNU Make).
+
+This will compile the diamondBase library and the Schema compiler, dsc. You
+may install these with 'make install' (make -f Makefile.gen install)
+
+This will copy the library into LIBDIR and dsc into BINDIR. You are now
+ready to use DiamondBase. Read the documentation for instructions on how to
+use it.
+
+
+MULTIUSER VERSION
+
+The multiuser version can be compiled by using: make multi
+It can be installed with: make installmulti
+
+DOCUMENTATION
+
+There is a very nice (we think) manual for the package in LaTeX format in
+this distribution. To make the documentation enter 'latex doc.tex'. When
+this finishes, run it a second time to get the page/figure references
+accurate. This will produce doc.dvi. You can either preview this or convert
+it to some printable form (eg, by using dvips).
+
+If you do not have LaTeX, then we can send you the dvi file.
+If you do not have dvi tools, we can send you a PostScript version.
+If you do not have PostScript, we can send you an ascii version.
+If you do not have ascii... Well, er, um, things are looking bad for you.
+
+Then you're ready to use DiamondBase. Good Luck.
+
+BUGS
+
+What are they? Hopefully you won't find any, but if you do, please mail a
+desription of the bug and maybe even a bit of code to exploit it along with
+any patches you might have that fix the bug to the following address:
+
+	darrenp@dibbler.cs.monash.edu.au
+
+We will attempt to rectify the bug or incorporate your patches. We would
+also like to hear about errors in the manual.
+
+NOTE: Please include a description of the platform you are running
+DiamondBase on including the architecture, compiler and any other relevant
+info. Please also include and changes you have made to the Makefile,
+particularly compiler flags. Also compile and run the version program and
+send us the output of that with your bug.
+
+DiamondBase was written by, and is maintained by:
+
+Darren Platt: darrenp@dibbler.cs.monash.edu.au
+Andrew Davison: davison@bruce.cs.monash.edu.au
+Kevin Lentin: kevinl@bruce.cs.monash.edu.au
+
+We invite comments on the package, suggestions etc.
+
+Note. Some of the things we mention are trademarks of some big companies
+with lots of lawyers.

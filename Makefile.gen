@@ -1,0 +1,309 @@
+##########################################################
+# Generic Makefile for Diamondbase.
+# This is the Ultrix version. Modify the sections below to suit your machine.
+# PLEASE read the normal Makefile for descriptions of what everything is.
+#
+##########################################################
+
+ifndef BINDIR
+BINDIR=/usr/local/bin
+endif
+ifndef LIBDIR
+LIBDIR=/usr/local/lib
+endif
+ifndef INCDIR
+INCDIR=/usr/local/include
+endif
+
+################
+# Source files
+
+OBJ=o
+
+ALLSRC=btree.cc bucket.cc d_types.cc dbase.cc dbobj.cc dbotest.cc \
+	   diarel.cc dispr.cc generate.cc idxinfo.cc main.cc \
+	   myobj.cc nserver.cc rand.cc rserv.cc rtest.cc search.cc \
+	   test1.cc tester.cc dberr.cc cache.cc btdump.cc version.cc \
+	   mystring.cc mserv.cc diagrel.cc db2txt.cc utils.cc
+
+MULTISRC=gib.cc dclient.cc
+
+MULTIHEAD=gib.h dcdefs.h dclient.h ipcproto.h
+
+INSTALLMULTIHEAD=dclient.h dcdefs.h
+
+DOCSRC=doc.tex dsc.tex fileform.tex mycprog.sty fancyheadings.sty dirstruc.tex multi.tex strings.tex
+
+XTRACLEAN= doc.aux doc.dvi doc.log doc.ps
+
+OTHERSRC=dsc.l dsc.y ns.dbc
+
+RELATIONHEAD=btree.h d_types.h dbase.h dbobj.h defs.h diarel.h \
+		idxinfo.h nserver.h object.h dbstr.h \
+		rserv.h dberr.h cache.h version.h mystring.h mserv.h \
+		diagrel.h ordcomp.h utils.h
+
+ALLHEAD=$(RELATIONHEAD) generate.h myobj.h pathinfo.h rand.h 
+
+OTHERDIST=Makefile Makefile.gen BETA README Copyright Diamond.cfg CHANGES lex.yy.c
+
+DIST=$(ALLSRC) $(DOCSRC) $(OTHERSRC) $(ALLHEAD) $(OTHERDIST) $(MULTISRC) $(MULTIHEAD)
+
+BINARIES=dsc db2txt
+
+################
+# List of object files
+
+OBJS=btree.$(OBJ) bucket.$(OBJ) d_types.$(OBJ) dbase.$(OBJ) dbobj.$(OBJ) \
+	diarel.$(OBJ) generate.$(OBJ) idxinfo.$(OBJ) nserver.$(OBJ) \
+	rserv.$(OBJ) dberr.$(OBJ) cache.$(OBJ) mystring.$(OBJ) mserv.$(OBJ)
+
+CC = g++
+CFLAGS = -g -Wall
+LOAD = -o 
+LDFLAGS = -L. -ldiamond # -lg++
+DEP =
+#
+# If your lex or yacc leave extern malloc declarations at the front of
+# their output, then use the FLEXFIX and STRIPHEAD in the sunos section
+# of Makefile.
+#
+FLEXFIX =
+PARSERGEN = yacc
+LIBRARIAN = ar rcv
+RANLIB = ranlib
+INSTALLBIN = install -m 755 -s -c
+INSTALL = install -m 644 -c
+LIBNAME = libdiamond.a
+LIBOBJS = $(OBJS)
+STRIPHEAD = cp y.tab.c dsc.cc
+RM = rm
+RMFLAGS = -f
+CP = cp
+MKDIR = mkdir
+
+.SUFFIXES:
+.SUFFIXES: .$(OBJ) .y,v .l,v .y .l .cc,v .cc .h,v .h 
+
+######################################################
+# Targets start here
+#
+# Do not change anything under this comment.
+#
+######################################################
+
+all: lib $(BINARIES)
+
+install: all
+	-$(MKDIR) $(BINDIR)
+	-$(MKDIR) $(LIBDIR)
+	-$(MKDIR) $(INCDIR)
+	$(INSTALLBIN) $(BINARIES) $(BINARIES)
+	$(INSTALL) $(LIBNAME) $(LIBDIR)/$(LIBNAME)
+	$(CP) $(RELATIONHEAD) $(INCDIR)
+	
+installmulti: multi
+	-$(MKDIR) $(LIBDIR)
+	-$(MKDIR) $(INCDIR)
+	$(INSTALL) $(MULTILIB) $(LIBDIR)/$(MULTILIB)
+	$(CP) $(INSTALLMULTIHEAD) $(INCDIR)
+
+depend: $(ALLSRC) $(ALLHEAD) dsc.y
+	@echo -n "Backing up Makefile, "
+	@mv -f Makefile Makefile.bak
+	@awk '/^\#Do not remove/{n = 1;print $0} n==0' Makefile.bak >Makefile
+	@echo "now making dependencies"
+	@sh -c 'for a in $(ALLSRC) $(MULTISRC); do gcc -I. -M $$a; done' | sed -e 's/\.o/.$$(OBJ)/;s| /[^ ]*||g;/^ *\\$$/d' >> Makefile
+
+clean:
+	rm -f lex.yy.c y.tab.c dsc.cc *.$(OBJ) $(MULTILIB) $(LIBNAME) dsc $(XTRACLEAN) version
+	rcsclean RCS/*
+
+trans: db2txt
+
+db2txt: db2txt.$(OBJ) $(LIBNAME)
+	$(CC) $(CFLAGS) $(LOAD)db2txt db2txt.$(OBJ) $(LDFLAGS)
+
+lib: $(LIBNAME)
+
+multi: $(MULTILIB) jeweler
+
+$(MULTILIB): dclient.$(OBJ)
+	-$(RM) $(RMFLAGS) $(MULTILIB)
+	$(LIBRARIAN) $(MULTILIB) dclient.$(OBJ)
+	$(RANLIB) $(MULTILIB)
+
+$(LIBNAME): $(LIBOBJ)
+	-$(RM) $(RMFLAGS) $(LIBNAME)
+	$(LIBRARIAN) $(LIBNAME) $(LIBOBJS)
+	$(RANLIB) $(LIBNAME)
+
+lex.yy.c: dsc.l
+	flex dsc.l
+	$(FLEXFIX)
+
+dsc.cc: lex.yy.c dsc.y
+	-$(RM) $(RMFLAGS) dsc.cc
+	$(PARSERGEN) dsc.y
+	$(STRIPHEAD)
+
+dsc: lex.yy.c dsc.$(OBJ) $(LIBNAME)
+	$(CC) $(CFLAGS) $(LOAD)dsc dsc.$(OBJ) $(LDFLAGS)
+
+jeweler: gib.$(OBJ) $(LIBNAME)
+	$(CC) $(CFLAGS) $(LOAD)jeweler gib.$(OBJ) $(LDFLAGS)
+
+version: version.$(OBJ) $(LIBNAME) ns.dbc
+	$(CC) $(CFLAGS) $(LOAD)version version.$(OBJ) $(LDFLAGS)
+
+dispr: dispr.$(OBJ) $(LIBNAME)
+	$(CC) $(CFLAGS) $(LOAD)dispr dispr.$(OBJ) $(LDFLAGS)
+
+dist: $(DIST)
+	(cd ..; tar cf - $(DISTFILES) | compress > diamond.tar.Z)
+
+######################
+# Test suite....
+######################
+
+dbotest: $(LIBNAME) 
+	dsc $(TESTDBFILES) $(TESTSCHEMA) test
+	$(CC) $(CFLAGS) $(LOAD)dbotest test.cc dbotest.cc $(LDFLAGS)
+
+tester: tester.$(OBJ) $(LIBNAME)
+	$(CC) $(CFLAGS) $(LOAD)tester tester.$(OBJ) $(LDFLAGS)
+
+btdump: btdump.$(OBJ) $(LIBNAME)
+	$(CC) $(CFLAGS) $(LOAD)btdump btdump.$(OBJ) $(LDFLAGS)
+
+RTEST_O=rtest.$(OBJ) rand.$(OBJ) $(LIBNAME)
+
+rtest: $(RTEST_O)
+	$(CC) $(CFLAGS) $(LOAD)rtest $(CFLAGS) $(RTEST_O) $(LDFLAGS) -lm
+
+test1: test1.$(OBJ) myobj.$(OBJ) $(LIBNAME)
+	$(CC) $(CFLAGS) $(LOAD)test1 test1.$(OBJ) $(LDFLAGS)
+
+
+#########################
+# Automatic dependancies.
+#########################
+
+dsc.$(OBJ) : dsc.cc idxinfo.h d_types.h rserv.h defs.h btree.h object.h generate.h cache.h dberr.h mserv.h
+
+#Do not remove this line or I will be very very angry (and broken).
+btree.$(OBJ) : btree.cc \
+  ./btree.h ./defs.h ./dberr.h \
+  ./rserv.h ./cache.h ./object.h ./dbstr.h ./mystring.h 
+bucket.$(OBJ) : bucket.cc ./defs.h ./dberr.h \
+  ./object.h ./dbstr.h ./mystring.h \
+  
+d_types.$(OBJ) : d_types.cc ./d_types.h ./dbstr.h ./mystring.h \
+  ./defs.h ./dberr.h 
+dbase.$(OBJ) : dbase.cc \
+  ./dbase.h ./nserver.h \
+  ./defs.h ./dberr.h ./dbobj.h ./idxinfo.h \
+  ./rserv.h ./cache.h ./btree.h ./object.h ./dbstr.h ./mystring.h ./mserv.h \
+  ./diarel.h \
+  ./d_types.h ./version.h 
+dbobj.$(OBJ) : dbobj.cc \
+  ./dbobj.h ./idxinfo.h \
+  ./rserv.h ./defs.h ./dberr.h ./cache.h \
+  ./btree.h ./object.h ./dbstr.h ./mystring.h \
+  ./mserv.h \
+  ./d_types.h 
+diarel.$(OBJ) : diarel.cc ./diarel.h ./object.h ./defs.h ./dberr.h \
+  ./dbstr.h \
+  ./mystring.h \
+  ./dbase.h ./nserver.h \
+  ./dbobj.h ./idxinfo.h \
+  ./rserv.h ./cache.h ./btree.h ./mserv.h \
+  ./d_types.h 
+dispr.$(OBJ) : dispr.cc \
+  idxinfo.h \
+  d_types.h ./dbstr.h ./mystring.h \
+  ./defs.h ./dberr.h 
+generate.$(OBJ) : generate.cc \
+  ./defs.h ./dberr.h ./utils.h ./idxinfo.h ./d_types.h ./dbstr.h ./mystring.h 
+idxinfo.$(OBJ) : idxinfo.cc \
+  ./idxinfo.h \
+  
+main.$(OBJ) : main.cc myobj.h object.h ./defs.h ./dberr.h \
+  ./dbstr.h ./mystring.h \
+  
+myobj.$(OBJ) : myobj.cc myobj.h object.h ./defs.h ./dberr.h \
+  ./dbstr.h ./mystring.h \
+  
+nserver.$(OBJ) : nserver.cc \
+  ./nserver.h \
+  ./defs.h ./dberr.h \
+  
+rand.$(OBJ) : rand.cc rand.h \
+  
+rserv.$(OBJ) : rserv.cc \
+  ./rserv.h ./defs.h ./dberr.h \
+  ./cache.h 
+rtest.$(OBJ) : rtest.cc \
+  rserv.h ./defs.h ./dberr.h \
+  ./cache.h rand.h 
+search.$(OBJ) : search.cc 
+test1.$(OBJ) : test1.cc myobj.h object.h ./defs.h ./dberr.h \
+  ./dbstr.h ./mystring.h \
+  rserv.h ./cache.h 
+tester.$(OBJ) : tester.cc myobj.h object.h ./defs.h ./dberr.h \
+  ./dbstr.h ./mystring.h \
+  rserv.h ./cache.h 
+dberr.$(OBJ) : dberr.cc \
+  ./dberr.h 
+cache.$(OBJ) : cache.cc \
+  ./cache.h ./defs.h ./dberr.h \
+  
+btdump.$(OBJ) : btdump.cc \
+  btree.h ./defs.h ./dberr.h \
+  ./rserv.h \
+  ./cache.h ./object.h ./dbstr.h ./mystring.h \
+  
+version.$(OBJ) : version.cc dbase.h ./nserver.h \
+  ./defs.h \
+  ./dberr.h ./dbobj.h ./idxinfo.h \
+  ./rserv.h ./cache.h ./btree.h ./object.h \
+  ./dbstr.h ./mystring.h \
+  ./mserv.h \
+  
+mystring.$(OBJ) : mystring.cc \
+  ./mystring.h \
+  ./defs.h ./dberr.h 
+mserv.$(OBJ) : mserv.cc ./mserv.h \
+  ./mystring.h \
+  ./defs.h ./dberr.h 
+diagrel.$(OBJ) : diagrel.cc \
+  ./diagrel.h ./diarel.h ./object.h ./defs.h ./dberr.h ./dbstr.h \
+  ./mystring.h \
+  ./dbase.h ./nserver.h \
+  ./dbobj.h ./idxinfo.h \
+  ./rserv.h ./cache.h ./btree.h ./mserv.h \
+  ./d_types.h ./ordcomp.h 
+db2txt.$(OBJ) : db2txt.cc \
+  ./diagrel.h ./diarel.h ./object.h ./defs.h ./dberr.h \
+  ./dbstr.h ./mystring.h \
+  ./dbase.h ./nserver.h \
+  ./dbobj.h ./idxinfo.h \
+  ./rserv.h ./cache.h ./btree.h ./mserv.h \
+  ./d_types.h \
+  ./generate.h 
+utils.$(OBJ) : utils.cc \
+  
+gib.$(OBJ) : gib.cc gib.h diagrel.h ./diarel.h ./object.h ./defs.h ./dberr.h \
+  ./dbstr.h ./mystring.h \
+  ./dbase.h ./nserver.h \
+  ./dbobj.h ./idxinfo.h ./rserv.h ./cache.h \
+  ./btree.h ./mserv.h \
+  ./d_types.h \
+  dcdefs.h \
+  ipcproto.h \
+  
+dclient.$(OBJ) : dclient.cc \
+  ipcproto.h \
+  dclient.h defs.h ./dberr.h \
+  dcdefs.h object.h ./defs.h ./dbstr.h \
+  ./mystring.h 

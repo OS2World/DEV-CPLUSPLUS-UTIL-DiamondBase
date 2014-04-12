@@ -1,0 +1,46 @@
+Recently, you mailed Darren Platt concerning a C++ Programmers Database
+that we have been writing. The product is called DiamondBase and is now
+ready for a round of beta testing.
+
+Please read the Copyright file for our almost entirely non fascist
+requirements. Additionally, the following conditions are added for beta
+testers.
+
+	Please do not give this beta to other people (except those working
+	with you). We are happy for them to beta test for us, but would rather
+	they come through us so we have a list of our beta testers. We do not
+	want beta copies distributed all over the place, making support for the
+	package once it is released difficult.
+
+	We would also not suggest incorporating beta code into a distributable
+	package. It is far wiser to wait for a release version (which,
+	depending on how quickly you analyse this version, shouldn't be too far
+	away).
+
+At the bottom of this mail, and in subsequent mail, you will find a
+uuencoded version of diamond.tar.Z. Remove the mail headers and this
+rambling and uudecode the file.
+
+The .tar.Z file is also available via anonymous ftp from
+pippin.cs.monash.edu.au in /pub/export.
+
+After that extract the package from diamond.tar.Z.
+The easiest way to do this is:
+	zcat diamond.tar.Z | tar -xf -
+
+This will create a diamond subdirectory under the current directory. Please
+read the README file in that directory. It has instructions.
+
+When (or if) you find a bug, please send us a description of the problem,
+any input and output that is relevant _AND_ the code that caused it (enough
+code for us to repeat it). Also, we would appreciate it if you could send
+us any applications you write so that we may determine how people are using
+the package, what calls are more frequently used and general usage patterns
+etc. We will not do anythying with this code other than use it for
+statistical purposes.
+
+Good luck, we look forward to hearing from you.
+
+Kevin Lentin
+Darren Platt
+Andrew Davison

@@ -1,0 +1,45 @@
+(c) Copyright 1993 Kevin Lentin, Darren Platt, Andrew Davison.
+ 
+Disclaimer: 
+
+This package comes without warranty. If you screw up using it, and lose
+for example millions of dollars , then we are very sorry but not
+responsible for the ensuing mess. If it screws up due to the way we
+wrote it and again (for example) you lose millions of dollars, then we
+are very sorry, hope you post a bug report, but we are not
+responsible.
+
+Place-To-Send-Bugs: darrenp@dibbler.cs.monash.edu.au
+
+You may distribute this software in its entirety, provided the
+following conditions are met:
+
+    * full source code is provided including this copyright
+
+    * there is no charge for the software itself (there may be
+      a minimal charge for the copying or distribution effort)
+
+    * this copyright notice is not modified or removed from any
+      source file
+ 
+    
+Ok - now for the tricky part - charging for software which incorporates any
+part of the DiamondBase package. We are a little undecided on this point
+and would like some feedback on what people want to do with it first. It
+personally strikes us as grossly unfair that someone could potentially make
+obscene quantities of money out of our hard work whilst we make nothing except
+a little kudos (bug levels permitting).
+
+So ... if you would like to make commercial use of DiamondBase - or buy the
+rights to it - we would love to discuss this with you. We are unlikely to
+exact enormous demands, but would like some return on our investment.
+The bottom line is 
+
+** COMMERCIAL USE OF THIS SOFTWARE REQUIRES THE EXPRESS PERMISSION OF
+                          THE AUTHORS                                  **
+
+That notwithstanding, we would like DiamondBase to become a popular
+choice for small database implementations - and so we may well end up
+putting the GNU Public License on it to encourage usage. We will reserve
+our decision pending feedback however - we are essentially nice people who
+don't want to be exploited.
